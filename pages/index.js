@@ -1,8 +1,35 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { doc, setDoc, getDoc, collection  } from 'firebase/firestore';
+import { firebaseDB } from 'lib/data/firebase';
 
 export default function Home() {
+
+  // Test Firebase setup
+  const addDataToFirestore = async () => {
+    const docData = {
+      first: "Ada",
+      last: "Lovelace",
+      born: 1815
+    };
+
+    // Add a new document in collection "users" with ID 'test'
+    await setDoc(doc(collection(firebaseDB, "users"), "test"), docData);
+    console.log("Document successfully written!");
+
+    // Read the document and log it
+    const docRef = doc(collection(firebaseDB, "users"), "test");
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+    } else {
+      console.log("No such document!");
+    }
+  };
+
+  addDataToFirestore();
+
   return (
     <div className={styles.container}>
       <Head>
