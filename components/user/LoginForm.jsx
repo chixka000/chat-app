@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, auth } from 'lib/data/firebase';
-import { Button, TextField, Box, Typography, Alert } from '@mui/material';
-import Link from 'next/link';
+import { Button, TextField, Box, Typography, Alert, Link } from '@mui/material';
 
 export default function Login() {
     const [email, setEmail] = useState('');

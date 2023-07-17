@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, auth, signInWithEmailAndPassword } from 'lib/data/firebase';
+import { createUserWithEmailAndPassword, auth, signInWithEmailAndPassword, firebaseDB } from 'lib/data/firebase';
 import { Alert, Box, Button, CircularProgress, Link, TextField, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function SignupFromComponent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setProfilePicture(file);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +28,16 @@ export default function SignupFromComponent() {
 
       // Delay login by 1.5 seconds. Auto-logged in, redirect to index if successful
       setTimeout(async () => {
+
+        // Create a "users" document in Firestore with user information
+        const userDocRef = doc(firebaseDB, 'users', auth.currentUser.uid);
+        await setDoc(userDocRef, {
+          email: email,
+          password: password,
+          name: name,
+          profilePictsure: '',
+        });
+
         await signInWithEmailAndPassword(auth, email, password);
         router.push('/');
       }, 1500);
@@ -58,6 +75,16 @@ export default function SignupFromComponent() {
         <div style={{ marginBottom: 10 }}>
           <TextField
             fullWidth
+            label="Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <TextField
+            fullWidth
             label="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -73,6 +100,20 @@ export default function SignupFromComponent() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <input
+            type="file"
+            accept="image/*"
+            id="profilePicture"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="profilePicture">
+            <Button component="span" variant="contained" color="primary">
+              Upload Profile Picture
+            </Button>
+          </label>
         </div>
         <div style={{ marginTop: 20 }}>
           <Button type="submit" fullWidth variant="contained" disabled={loading}>
