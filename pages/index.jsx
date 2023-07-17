@@ -51,9 +51,7 @@ export default function Home() {
 
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
-      <Box sx={{ width: '25%', borderRight: '1px solid gray', overflow: 'auto', bgcolor: '#1C1C1C', color: 'white' }}>
-        <UserListComponent />
-      </Box>
+      <UserListComponent />
       <Box sx={{ width: '75%', p: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <Typography variant="h1" sx={{ textAlign: 'center', color: '#32CD32	' }}>Welcome to my chat app</Typography>
         <Typography variant="body1" sx={{ textAlign: 'center' }}>

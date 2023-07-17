@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { List, ListItem, ListItemText } from '@mui/material';
+import { Avatar, Box, List, ListItem, ListItemText } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import AuthContext from 'contexts/AuthContext';
@@ -37,18 +37,21 @@ const UserListComponent = () => {
       fetchUsers();
     }
   }, [user]);
-  
+
   return (
-    <List component="nav">
-      {users.length > 0 &&
-        users.map((user, index) => (
-          <Link key={index} href={`/chat/${user.id}`}>
-            <ListItem onClick={() => router.push(`/chat/${user.id}`)} sx={{ py: 2 }}>
-              <ListItemText primary={user.name} />
-            </ListItem>
-          </Link>
-        ))}
-    </List>
+    <Box sx={{ width: '25%', borderRight: '1px solid gray', overflow: 'auto', bgcolor: '#5D3FD3', color: 'white' }}>
+      <List component="nav">
+        {users.length > 0 &&
+          users.map((user, index) => (
+            <Link key={index} href={`/chat/${user.id}`}>
+              <ListItem onClick={() => router.push(`/chat/${user.id}`)} sx={{ py: 2 }}>
+                <Avatar sx={{ marginRight: '10px' }} alt={user?.name} src={user?.profilePicture} />
+                <ListItemText primary={user.name} />
+              </ListItem>
+            </Link>
+          ))}
+      </List>
+    </Box>
   );
 };
 

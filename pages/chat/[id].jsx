@@ -2,38 +2,13 @@ import { Box } from "@mui/material";
 import ChatComponent from "components/messages/ChatComponent";
 import ChatNavbar from "components/messages/ChatNav";
 import UserListComponent from "components/user/UserListComponent";
-import { useEffect, useState } from "react";
+import AuthContext from "contexts/AuthContext";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
 
-export default function chatPage() {
-    const [users, setUsers] = useState([]);
-
-    useEffect(() => {
-        if (user) {
-            const fetchUsers = async () => {
-                const usersCollectionRef = collection(firebaseDB, 'users');
-                const usersSnapshot = await getDocs(usersCollectionRef);
-                const usersData = [];
-
-                for (const docRef of usersSnapshot.docs) {
-                    const userDoc = doc(firebaseDB, 'users', docRef.id);
-                    const userSnapshot = await getDoc(userDoc);
-                    const userData = userSnapshot.data();
-
-                    // Exclude the current user
-                    if (userSnapshot.id !== auth.currentUser.uid) {
-                        const userWithId = {
-                            id: docRef.id,
-                            ...userData
-                        };
-                        usersData.push(userWithId);
-                    }
-                }
-                setUsers(usersData);
-            };
-            fetchUsers();
-        }
-    }, [user]);
-
+export default function ChatPage() {
+    const router = useRouter();
+    const { id } = router.query;
 
     // Sample messages data
     const messages = [
@@ -59,11 +34,9 @@ export default function chatPage() {
 
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
-            <Box sx={{ width: '20%', borderRight: '1px solid gray', overflow: 'auto', bgcolor: '#1C1C1C', color: 'white' }}>
-                <UserListComponent users={users} />
-            </Box>
+            <UserListComponent />
             <Box sx={{ width: '80%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <ChatNavbar user={user} />
+                <ChatNavbar userId={id} />
                 <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
                     <ChatComponent messages={messages} />
                 </Box>

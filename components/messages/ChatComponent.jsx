@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, Avatar } from '@mui/material';
 
 const ChatComponent = ({ messages }) => {
     return (
@@ -15,7 +15,7 @@ const ChatComponent = ({ messages }) => {
                             flexDirection: message.isCurrentUser ? 'row-reverse' : 'row',
                         }}
                     >
-                        <img
+                        <Avatar
                             src={message.profilePicture}
                             alt="Profile"
                             style={{
@@ -32,11 +32,12 @@ const ChatComponent = ({ messages }) => {
                                 maxWidth: '50%',
                                 flexDirection: 'column',
                                 flexGrow: 1,
-                                backgroundColor: message.isCurrentUser ? '#00FFFF' : '#7FFFD4',
+                                backgroundColor: message.isCurrentUser ? '#7FFFD4' : '#fff',
                                 color: 'white',
                                 borderRadius: '15px',
                                 padding: '20px',
                                 order: message.isCurrentUser ? 1 : 2,
+                                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
                             }}
                         >
                             <Typography variant="body2" color="textSecondary">
@@ -54,9 +55,9 @@ const ChatComponent = ({ messages }) => {
                     id="outlined-basic"
                     label="Type a message"
                     variant="outlined"
-                    sx={{ mr: 2, flexGrow: 1 }}
+                    sx={{ mr: 2, flexGrow: 1, boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '15px' }}
                 />
-                <Button variant="contained">Send</Button>
+                <Button variant="contained" sx={{ backgroundColor: '#00A36C', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)' }}>Send</Button>
             </Box>
         </Box>
     );
