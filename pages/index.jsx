@@ -1,34 +1,44 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import { doc, setDoc, getDoc, collection  } from 'firebase/firestore';
-import { firebaseDB } from 'lib/data/firebase';
+import { doc, setDoc, getDoc, collection } from 'firebase/firestore';
+import { auth, firebaseDB } from 'lib/data/firebase';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import Login from 'components/user/LoginForm';
+import { Box, CircularProgress } from '@mui/material';
 
 export default function Home() {
 
-  // Test Firebase setup
-  const addDataToFirestore = async () => {
-    const docData = {
-      first: "Ada",
-      last: "Lovelace",
-      born: 1815
-    };
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    // Add a new document in collection "users" with ID 'test'
-    await setDoc(doc(collection(firebaseDB, "users"), "test"), docData);
-    console.log("Document successfully written!");
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setIsLoading(false);
+    })
 
-    // Read the document and log it
-    const docRef = doc(collection(firebaseDB, "users"), "test");
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-    } else {
-      console.log("No such document!");
-    }
-  };
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [])
 
-  addDataToFirestore();
+  if (isLoading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <div className={styles.container}>
