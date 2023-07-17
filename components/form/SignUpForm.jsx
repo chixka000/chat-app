@@ -4,7 +4,7 @@ import { Alert, Box, Button, CircularProgress, Link, TextField, Typography } fro
 import { useRouter } from 'next/router';
 import { doc, setDoc } from 'firebase/firestore';
 
-export default function SignupFromComponent() {
+export default function SignupFormComponent({ toggleLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -123,7 +123,7 @@ export default function SignupFromComponent() {
       </form>
       <Box sx={{ mt: 2 }}>
         <Typography variant="body2" align="center">
-          Already have account? <Link href="/">Login</Link>
+          Already have account? <Link onClick={toggleLogin} sx={{ cursor: 'pointer' }}>Login</Link>
         </Typography>
 
       </Box>
