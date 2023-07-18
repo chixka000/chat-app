@@ -3,7 +3,7 @@ import ChatComponent from "components/messages/ChatComponent";
 import ChatNavbar from "components/messages/ChatNav";
 import UserListComponent from "components/user/UserListComponent";
 import AuthContext from "contexts/AuthContext";
-import { collection, query, orderBy, onSnapshot, addDoc, where } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, addDoc, where, doc, getDoc } from "firebase/firestore";
 import { firebaseDB } from "lib/data/firebase";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -15,6 +15,7 @@ export default function ChatPage() {
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [receiverData, setReceiverData] = useState(null);
 
     useEffect(() => {
         const messagesCollectionRef = collection(firebaseDB, 'messages');
@@ -34,7 +35,26 @@ export default function ChatPage() {
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
-    }, []);
+    }, [id]);
+
+
+    useEffect(() => {
+        const fetchReceiverData = async () => {
+            try {
+                const receiverDocRef = doc(firebaseDB, 'users', id);
+                const receiverSnapshot = await getDoc(receiverDocRef);
+                if (receiverSnapshot.exists()) {
+                    setReceiverData(receiverSnapshot.data());
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        if (id) {
+            fetchReceiverData();
+        }
+    }, [id]);
 
     const handleSendMessage = async (e) => {
         if (newMessage) {
@@ -54,7 +74,7 @@ export default function ChatPage() {
             }
         }
     };
-    
+
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
             <UserListComponent />
@@ -64,6 +84,8 @@ export default function ChatPage() {
                     <ChatComponent messages={messages} handleSendMessage={handleSendMessage}
                         newMessage={newMessage}
                         setNewMessage={setNewMessage}
+                        receiverDataImg={receiverData?.profilePicture}
+                        senderDataImg={user?.userData?.profilePicture}
                         userId={user.uid}
                     />
                 </Box>

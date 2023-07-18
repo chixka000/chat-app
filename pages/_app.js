@@ -3,9 +3,11 @@ import '../styles/globals.css'
 import { onAuthStateChanged } from 'firebase/auth';
 import { Box, CircularProgress } from '@mui/material';
 import Login from 'components/form/LoginForm';
-import { auth } from 'lib/data/firebase';
+import { auth, firebaseDB } from 'lib/data/firebase';
 import SignupFormComponent from 'components/form/SignUpForm';
 import AuthContext from 'contexts/AuthContext';
+import { doc, onSnapshot } from 'firebase/firestore';
+
 
 function MyApp({ Component, pageProps }) {
   const [user, setUser] = useState(null);
@@ -26,13 +28,32 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setIsLoading(false);
-    })
+      if (currentUser) {
+        // User is logged in
+        setUser(currentUser);
+        setIsLoading(false);
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, [])
+        // Fetch user document from /users collection
+        const userDocRef = doc(firebaseDB, 'users', currentUser.uid);
+        const unsubscribeUser = onSnapshot(userDocRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const userData = snapshot.data();
+            setUser((prevUser) => ({
+              ...prevUser,
+              userData // Insert the fetched userData into the user state
+            }));
+          }
+        });
+
+        // Cleanup user subscription on unmount
+        return () => unsubscribeUser();
+      } else {
+        // User is not logged in
+        setUser(null);
+        setIsLoading(false);
+      }
+    });
+  }, []);
 
 
   if (isLoading) {

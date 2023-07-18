@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, Avatar } from '@mui/material';
 
-const ChatComponent = ({ messages, handleSendMessage, newMessage, setNewMessage, userId }) => {
+const ChatComponent = ({ messages, handleSendMessage, newMessage, setNewMessage, userId, receiverDataImg, senderDataImg }) => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ flex: 1, overflow: 'auto' }}>
@@ -17,7 +17,7 @@ const ChatComponent = ({ messages, handleSendMessage, newMessage, setNewMessage,
                     >
                         {userId !== message.senderId && (
                             <Avatar
-                                src={message.profilePicture}
+                                src={receiverDataImg}
                                 alt="Profile"
                                 style={{
                                     width: 40,
@@ -55,7 +55,7 @@ const ChatComponent = ({ messages, handleSendMessage, newMessage, setNewMessage,
                         </Box>
                         {userId === message.senderId && (
                             <Avatar
-                                src={message.profilePicture}
+                                src={senderDataImg}
                                 alt="Profile"
                                 style={{
                                     width: 40,

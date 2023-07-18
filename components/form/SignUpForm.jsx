@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, auth, signInWithEmailAndPassword, firebaseDB } from 'lib/data/firebase';
+import { createUserWithEmailAndPassword, auth, signInWithEmailAndPassword, firebaseDB, firebaseStorage } from 'lib/data/firebase';
 import { Alert, Box, Button, CircularProgress, Link, TextField, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { doc, setDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function SignupFormComponent({ toggleLogin }) {
   const [email, setEmail] = useState('');
@@ -11,6 +12,8 @@ export default function SignupFormComponent({ toggleLogin }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+
   const router = useRouter();
 
   const handleFileChange = (e) => {
@@ -29,13 +32,20 @@ export default function SignupFormComponent({ toggleLogin }) {
       // Delay login by 1.5 seconds. Auto-logged in, redirect to index if successful
       setTimeout(async () => {
 
+        // Upload profile picture to Firebase Storage
+        const storageRef = ref(firebaseStorage, `profilePictures/${auth.currentUser.uid}`);
+        await uploadBytes(storageRef, profilePicture);
+
+        // Get the download URL of the uploaded profile picture
+        const downloadUrl = await getDownloadURL(storageRef);
+
         // Create a "users" document in Firestore with user information
         const userDocRef = doc(firebaseDB, 'users', auth.currentUser.uid);
         await setDoc(userDocRef, {
           email: email,
           password: password,
           name: name,
-          profilePictsure: '',
+          profilePictsure: downloadUrl,
         });
 
         await signInWithEmailAndPassword(auth, email, password);
