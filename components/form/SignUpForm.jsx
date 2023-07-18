@@ -13,12 +13,21 @@ export default function SignupFormComponent({ toggleLogin }) {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
 
   const router = useRouter();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setProfilePicture(file);
+
+    // Generate preview URL for selected image
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -45,7 +54,7 @@ export default function SignupFormComponent({ toggleLogin }) {
           email: email,
           password: password,
           name: name,
-          profilePictsure: downloadUrl,
+          profilePicture: downloadUrl,
         });
 
         await signInWithEmailAndPassword(auth, email, password);
@@ -118,13 +127,24 @@ export default function SignupFormComponent({ toggleLogin }) {
             id="profilePicture"
             onChange={handleFileChange}
             style={{ display: 'none' }}
+            required
           />
           <label htmlFor="profilePicture">
-            <Button component="span" variant="contained" color="primary">
+            <Button component="span" variant="contained" color="primary" sx={{ width: '100%' }}>
               Upload Profile Picture
             </Button>
           </label>
+          {!profilePicture && (
+            <Typography variant="caption" color="error">
+              Please upload a profile picture.
+            </Typography>
+          )}
         </div>
+        {previewUrl && ( // Display preview image if available
+          <div style={{ marginBottom: 10 }}>
+            <img src={previewUrl} alt="Preview" style={{ width: '100%', maxHeight: 200, objectFit: 'contain' }} />
+          </div>
+        )}
         <div style={{ marginTop: 20 }}>
           <Button type="submit" fullWidth variant="contained" disabled={loading}>
             {loading ? <CircularProgress size={24} /> : 'Sign Up'}

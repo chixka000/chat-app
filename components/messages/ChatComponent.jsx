@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Typography, TextField, Button, Avatar } from '@mui/material';
 
 const ChatComponent = ({ messages, handleSendMessage, newMessage, setNewMessage, userId, receiverDataImg, senderDataImg }) => {
