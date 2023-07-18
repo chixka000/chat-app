@@ -54,7 +54,7 @@ export default function ChatPage() {
             }
         }
     };
-    console.log('user', user)
+    
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
             <UserListComponent />
